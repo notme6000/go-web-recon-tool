@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/proto"
@@ -232,22 +233,92 @@ func extractNames(text string) []string {
 	return candidates
 }
 
+func displayHelp() {
+	fmt.Println(`
+Web Scraper with AI-powered Data Extraction
 
-func main() {
+Usage:
+  go-web-scraper [flags]
 
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
+Flags:
+  --api <api_key>     Create or update .env file with OpenRouter API key
+  --help              Show this help message
+
+Examples:
+  go run main.go --api sk-or-v1-xxxxxxxxxxxxx
+  go run main.go --help
+
+For more information, visit: https://openrouter.ai
+`)
+}
+
+func createEnvFile(apiKey string) error {
+	envPath := ".env"
+	content := fmt.Sprintf("API_KEY=%s\n", apiKey)
+	return os.WriteFile(envPath, []byte(content), 0644)
+}
+
+func checkAndLoadEnv() (string, error) {
+	envPath := ".env"
+	
+	_, err := os.Stat(envPath)
+	envExists := err == nil
+
+	if !envExists {
+		fmt.Println("\n⚠️  .env file not found!")
+		fmt.Println("Please provide your OpenRouter API key to continue.\n")
+		fmt.Println("Usage: go run main.go --api <your_api_key>")
+		fmt.Println("\nYou can get your API key from: https://openrouter.ai/keys\n")
+		os.Exit(1)
 	}
 
-	var website string
+	err = godotenv.Load(envPath)
+	if err != nil {
+		fmt.Printf("Error loading %s: %v\n", envPath, err)
+		os.Exit(1)
+	}
+
 	apiKey := os.Getenv("API_KEY")
+	if apiKey == "" {
+		fmt.Println("\n⚠️  API_KEY not found in .env file!")
+		fmt.Println("Please update your .env file or provide your API key:\n")
+		fmt.Println("Usage: go run main.go --api <your_api_key>")
+		fmt.Println("\nYou can get your API key from: https://openrouter.ai/keys\n")
+		os.Exit(1)
+	}
+
+	return apiKey, nil
+}
+
+func main() {
+	apiKeyFlag := flag.String("api", "", "OpenRouter API key to set in .env file")
+	helpFlag := flag.Bool("help", false, "Show help message")
+	flag.Parse()
+
+	if *helpFlag {
+		displayHelp()
+		os.Exit(0)
+	}
+
+	if *apiKeyFlag != "" {
+		err := createEnvFile(*apiKeyFlag)
+		if err != nil {
+			fmt.Printf("Error creating .env file: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("✓ .env file created successfully with API_KEY!")
+		os.Exit(0)
+	}
+
+	apiKey, _ := checkAndLoadEnv()
+
+	var website string
 
 	fmt.Printf("enter the link: ")
 	fmt.Scan(&website)
 	fmt.Println("scanning", website)
 
-	err = os.MkdirAll("data", 0755)
+	err := os.MkdirAll("data", 0755)
 	if err != nil {
 		panic(err)
 	}
