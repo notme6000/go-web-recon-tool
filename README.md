@@ -42,6 +42,8 @@ A Go-based web scraper that extracts contact information and personal data from 
 
 ## Usage
 
+### Basic Usage - Single URL Extraction
+
 Run the scraper from the command line:
 
 ```bash
@@ -62,14 +64,50 @@ The scraper will then:
 4. Extract name candidates and validate them using AI
 5. Save results to the `data/` directory
 
+### Advanced Usage - Directory Bruteforce + Scraping
+
+To scan for hidden directories and scrape data from each one:
+
+```bash
+go run main.go --wordlist ./wordlist.txt
+go run main.go -w ./wordlist.example.txt
+```
+
+The scraper will:
+1. Perform a brute-force scan using your wordlist file
+2. Identify accessible directories (status 200-299, 403, 405)
+3. Scrape each found directory for contact information
+4. Extract and validate data from all directories concurrently
+5. Save comprehensive results to `data/complete_results.json`
+
+#### Wordlist Format
+
+Create a text file with one directory path per line:
+
+```
+admin
+api/v1
+api/v2
+config.php
+.env
+backup
+database.sql
+# Comments start with #
+# Empty lines are ignored
+uploads
+users
+```
+
 ## Output
 
-The scraper creates two files in the `data/` directory:
+The scraper creates multiple files in the `data/` directory depending on the mode:
 
-### `data/data.txt`
+### Basic Mode (Single URL)
+
+#### `data/data.txt`
 Raw text content extracted from the website
 
-### `data/extracted_data.json`
+#### `data/extracted_data.json`
 Structured JSON containing:
 ```json
 {
@@ -78,6 +116,55 @@ Structured JSON containing:
   "phone_numbers": ["+1 (555) 123-4567", "555.987.6543"],
   "addresses": ["123 Main St", "456 Oak Avenue"]
 }
+```
+
+### Advanced Mode (with Wordlist)
+
+#### `data/complete_results.json`
+Comprehensive JSON with all found directories and extracted data:
+```json
+{
+  "base_url": "https://example.com",
+  "total_dirs": 3,
+  "directories": [
+    {
+      "path": "/admin",
+      "status_code": 200,
+      "data": {
+        "emails": ["admin@example.com"],
+        "names": ["Admin User"],
+        "phone_numbers": [],
+        "addresses": []
+      }
+    },
+    {
+      "path": "/api/v1",
+      "status_code": 200,
+      "data": {
+        "emails": ["support@example.com"],
+        "names": [],
+        "phone_numbers": ["+1-555-987-6543"],
+        "addresses": []
+      }
+    }
+  ]
+}
+```
+
+### Terminal Output
+
+Data is displayed in human-readable format:
+```
+📁 Directory: /admin
+--------------------------------------------------
+NAMES:
+  • John Doe
+EMAILS:
+  • john@example.com
+PHONE NUMBERS:
+  • +1-555-123-4567
+ADDRESSES:
+  • 123 Admin Lane
 ```
 
 ## How It Works

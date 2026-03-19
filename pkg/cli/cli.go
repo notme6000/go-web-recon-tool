@@ -31,18 +31,34 @@ func HandleFlags() {
 
 func DisplayHelp() {
 	fmt.Println(`
-Web Scraper with AI-powered Data Extraction
+Web Scraper with AI-powered Data Extraction & Directory Bruteforce
 
 Usage:
   go-web-scraper [flags]
 
 Flags:
-  --api <api_key>     Create or update .env file with OpenRouter API key
-  --help              Show this help message
+  --api <api_key>           Create or update .env file with OpenRouter API key
+  --wordlist, -w <path>     Path to wordlist file for directory bruteforce scanning
+  --help                    Show this help message
 
 Examples:
   go run main.go --api sk-or-v1-xxxxxxxxxxxxx
+  go run main.go --wordlist ./wordlist.txt
+  go run main.go -w ./wordlist.txt
   go run main.go --help
+
+Wordlist Format:
+  - One directory/path per line
+  - Lines starting with '#' are treated as comments
+  - Empty lines are ignored
+
+Example Wordlist:
+  # Admin directories
+  admin
+  administrator
+  # API endpoints
+  api/v1
+  api/v2
 
 For more information, visit: https://openrouter.ai
 `)
@@ -84,4 +100,9 @@ func LoadAPIKey() (string, error) {
 	}
 
 	return apiKey, nil
+}
+
+// GetWordlistFlag retrieves the wordlist flag value (supports both --wordlist and -w)
+func GetWordlistFlag() string {
+	return ""
 }

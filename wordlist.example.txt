@@ -1,0 +1,112 @@
+# Example Wordlist for Directory Bruteforce Scanning
+# One directory/path per line
+# Lines starting with '#' are comments and will be ignored
+# Empty lines are also ignored
+
+# Admin & Management
+admin
+administrator
+admin/
+dashboard
+panel
+manage
+management
+
+# API & Web Services
+api
+api/v1
+api/v2
+api/v3
+api/users
+api/products
+api/config
+rest
+graphql
+services
+
+# Common Web Directories
+public
+private
+assets
+static
+css
+js
+images
+img
+media
+downloads
+uploads
+files
+docs
+documentation
+help
+
+# Configuration & System Files
+config
+config.php
+config.js
+config.json
+.env
+.htaccess
+web.config
+robots.txt
+sitemap.xml
+.git
+.gitignore
+
+# Backup & Database
+backup
+backups
+backup.zip
+backup.tar.gz
+database
+database.sql
+db
+data
+
+# Development
+test
+tests
+testing
+src
+source
+build
+dist
+lib
+vendor
+node_modules
+
+# User & Login
+user
+users
+login
+auth
+authentication
+profile
+account
+settings
+
+# Content
+blog-home.html
+posts
+articles
+news
+content
+pages
+categories
+tags
+
+# Other Common Paths
+old
+tmp
+temp
+cache
+logs
+var
+site
+website
+home
+about
+contact
+privacy
+terms
